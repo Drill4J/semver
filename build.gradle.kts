@@ -19,8 +19,8 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
         }
     }
-    js {
 
+    js {
         useCommonJs()
         nodejs()
 
@@ -49,7 +49,9 @@ kotlin {
             val jsDist by registering(Copy::class) {
                 dependsOn(main.compileAllTaskName)
                 mustRunAfter(check)
-                from("$buildDir/js/packages/${project.name}")
+                from("$buildDir/js/packages/${project.name}") {
+                    exclude("*.hash")
+                }
                 into("$buildDir/distributions/npm")
                 doLast {destinationDir.resolve("package.json").transformPackageJson() }
             }
@@ -58,6 +60,7 @@ kotlin {
             }
         }
     }
+
     jvm {
         val main by compilations
         main.defaultSourceSet {
@@ -70,6 +73,21 @@ kotlin {
     }
 }
 
+publishing {
+    repositories {
+        maven {
+            url = uri("http://oss.jfrog.org/oss-release-local")
+            credentials {
+                username = project.propOrEnv("bintrayUser", "BINTRAY_USER")
+                password = project.propOrEnv("bintrayApiKey", "BINTRAY_API_KEY")
+            }
+        }
+    }
+}
+
+fun Project.propOrEnv(prop: String, env: String): String? = findProperty(prop)?.toString() ?: System.getenv(env)
+
+//TODO replace generation with json merging
 fun File.transformPackageJson() {
     val gson = com.google.gson.GsonBuilder()
         .setPrettyPrinting()
