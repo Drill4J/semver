@@ -52,6 +52,7 @@ kotlin {
                 from("$buildDir/js/packages/${project.name}") {
                     exclude("*.hash")
                 }
+                from("README.md")
                 into("$buildDir/distributions/npm")
                 doLast {destinationDir.resolve("package.json").transformPackageJson() }
             }
