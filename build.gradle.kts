@@ -25,7 +25,6 @@ kotlin {
         nodejs()
 
         val main by compilations
-        main.compileAllTaskName
         with(main) {
             packageJson {
                 dependencies.remove("kotlin-test")
