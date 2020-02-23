@@ -1,7 +1,9 @@
 plugins {
     kotlin("multiplatform") version "1.3.61"
-    `maven-publish`
 }
+
+apply(from = "gradle/git-version.gradle.kts")
+apply(from = "gradle/publishing.gradle.kts")
 
 repositories {
     jcenter()
@@ -27,9 +29,7 @@ kotlin {
         val main by compilations
         with(main) {
             packageJson {
-                dependencies.remove("kotlin-test")
-                dependencies.remove("kotlin-test-js-runner")
-
+                dependencies -= listOf("kotlin-test", "kotlin-test-js-runner")
             }
             defaultSourceSet {
                 dependencies {
@@ -73,37 +73,18 @@ kotlin {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            url = uri("http://oss.jfrog.org/oss-release-local")
-            credentials {
-                username = project.propOrEnv("bintrayUser", "BINTRAY_USER")
-                password = project.propOrEnv("bintrayApiKey", "BINTRAY_API_KEY")
-            }
-        }
-    }
-}
-
-fun Project.propOrEnv(prop: String, env: String): String? = findProperty(prop)?.toString() ?: System.getenv(env)
-
-//TODO replace generation with json merging
 fun File.transformPackageJson() {
     val gson = com.google.gson.GsonBuilder()
         .setPrettyPrinting()
         .create()
-    val jsonObject = gson.fromJson(reader(), com.google.gson.JsonObject::class.java)
-    val transformedJson: String = jsonObject.apply {
+    val jsonObjectClass = com.google.gson.JsonObject::class.java
+    val packageJson = gson.fromJson(file("package.json").reader(), jsonObjectClass)
+    val transformedJson: String = gson.fromJson(reader(), jsonObjectClass).apply {
         val name = get("name").asString
         addProperty("name", "@drill4j/$name")
-        addProperty("author", "Drill4j")
-        addProperty("license", "Apache-2.0")
-        addProperty("description", "A multiplatform SemVer library.")
-        add("repository", com.google.gson.JsonObject().apply {
-            addProperty("type", "git")
-            addProperty("url", "https://github.com/Drill4J/semver")
-        })
-        gson.toJson(this)
+        packageJson.entrySet().forEach { (k, v) ->
+            add(k, v)
+        }
     }.let(gson::toJson)
     writeText(transformedJson)
 }
