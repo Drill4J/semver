@@ -27,5 +27,13 @@ console.log(ver.nextPrerelease().toString()); // -> "0.1.1"
 let releaseVer = semver.parse("0.1.0");
 console.log(releaseVer.suffix); // ->  "" (empty string )
 
-let gitVer = semver.gitDescribeToSemVer("v1.2.3-1-1-g15312a5"); // -> "1.2.3-2"
+// semver from git
+let prerelNoAbbrev = semver.prereleaseFromGit("v1.1.0"); // -> "1.1.0"
+let prerelZeroDistance = semver.prereleaseFromGit("v1.1.0-0-g15312a5"); // -> "1.1.0"
+let prerel0 = semver.prereleaseFromGit("v1.1.0-1-g15312a5"); // -> "1.2.0-0"
+let prerel1 = semver.prereleaseFromGit("1.2.0-0-1-g15312a5"); // -> "1.2.0-1"
+
+let patchNoAbbrev = semver.prereleaseFromGit("v1.1.1"); // -> "1.1.1"
+let patchZeroDistance = semver.prereleaseFromGit("v1.1.1-0-g15312a5"); // -> "1.1.1"
+let patchIncrement = semver.prereleaseFromGit("v1.1.1-1-g15312a5"); // -> "1.1.2"
 ```

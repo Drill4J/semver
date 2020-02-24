@@ -8,11 +8,9 @@ val UNSPECIFIED = SemVer(major = 0, minor = 0, patch = 0, suffix = "unspecified"
 
 val GIT_DESCRIBE_REGEX = "([^\\s]+)-(\\d+)-g([0-9a-f]{3,})$".toRegex()
 
-fun String.gitDescribeToSemVer(): SemVer = GIT_DESCRIBE_REGEX.matchEntire(this)?.run {
-    val (_, ver, num) = groupValues
-    val semVer = ver.toSemVer()
-    if (num.toInt() > 0) semVer.nextPrerelease() else semVer
-} ?: toSemVer()
+fun String.prereleaseFromGit(): SemVer = parseGitDescribe(SemVer::nextPrerelease)
+
+fun String.patchFromGit(): SemVer = parseGitDescribe(SemVer::nextPatch)
 
 fun String.toSemVer(): SemVer = REGEX.matchEntire(this)?.run {
     val (_, major, minor, patch, suffix) = groupValues
@@ -53,5 +51,13 @@ data class SemVer(
         return "$major.$minor.$patch$optSuffix"
     }
 }
+
+private fun String.parseGitDescribe(
+    nextVer: (SemVer) -> SemVer
+): SemVer = GIT_DESCRIBE_REGEX.matchEntire(this)?.run {
+    val (_, ver, num) = groupValues
+    val semVer = ver.toSemVer()
+    if (num.toInt() > 0) nextVer(semVer) else semVer
+} ?: toSemVer()
 
 private fun String.nextSuffix() = "${toIntOrNull()?.inc() ?: 0}"

@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.3.61"
+    `maven-publish`
 }
 
 apply(from = "gradle/git-version.gradle.kts")
