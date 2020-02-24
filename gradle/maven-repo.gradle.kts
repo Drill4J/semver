@@ -9,7 +9,7 @@ extensions.findByType<PublishingExtension>()?.repositories {
     }
 }
 
-fun RepositoryHandler.ossReleaseRepo() = maven(url = "http://oss.jfrog.org/oss-release-local")
+fun RepositoryHandler.ossReleaseRepo() = maven(url = "https://oss.jfrog.org/oss-release-local")
 
 fun Project.propOrEnv(prop: String, env: String): String? = run {
     findProperty(prop)?.toString() ?: System.getenv(env)
