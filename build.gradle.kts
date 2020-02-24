@@ -3,7 +3,7 @@ plugins {
 }
 
 apply(from = "gradle/git-version.gradle.kts")
-apply(from = "gradle/publishing.gradle.kts")
+apply(from = "gradle/maven-repo.gradle.kts")
 
 repositories {
     jcenter()
