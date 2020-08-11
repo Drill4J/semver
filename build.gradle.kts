@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.3.61"
+    kotlin("multiplatform") version "1.4.0-rc"
     `maven-publish`
 }
 
@@ -11,11 +11,6 @@ repositories {
 }
 
 kotlin {
-    sourceSets.commonMain {
-        dependencies {
-            implementation(kotlin("stdlib-common"))
-        }
-    }
     sourceSets.commonTest {
         dependencies {
             implementation(kotlin("test-common"))
@@ -31,11 +26,6 @@ kotlin {
         with(main) {
             packageJson {
                 dependencies -= listOf("kotlin-test", "kotlin-test-js-runner")
-            }
-            defaultSourceSet {
-                dependencies {
-                    implementation(kotlin("stdlib-js"))
-                }
             }
         }
         val test by compilations
