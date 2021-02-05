@@ -1,5 +1,8 @@
+import java.net.*
+
 plugins {
     kotlin("multiplatform") version "1.3.61"
+    id("com.github.hierynomus.license")
     `maven-publish`
 }
 
@@ -89,3 +92,13 @@ fun File.transformPackageJson() {
     }.let(gson::toJson)
     writeText(transformedJson)
 }
+
+val licenseFormatSettings by tasks.registering(com.hierynomus.gradle.license.tasks.LicenseFormat::class) {
+    source = fileTree(project.projectDir).also {
+        include("**/*.kt", "**/*.java", "**/*.groovy")
+        exclude("**/.idea")
+    }.asFileTree
+    headerURI = URI("https://raw.githubusercontent.com/Drill4J/drill4j/develop/COPYRIGHT")
+}
+
+tasks["licenseFormat"].dependsOn(licenseFormatSettings)
